@@ -1,12 +1,16 @@
 import requests
 import config
+import logging
+import time
 
 auth_token = config.auth_token
 
 url = "https://api.start.gg/gql/alpha"
 
-i = 1
 sets_returned = 1
+event_slug = "apex-2022"
+region_name = "NEM"
+write_to_txt = False
 
 def get_event_id(slug):
     
@@ -37,8 +41,37 @@ def get_event_id(slug):
     return 0
 
 
-event_id = get_event_id("apex-2022")
+event_id = get_event_id(event_slug)
 
+numRetries = 0
+maxRetries = 10
+txtAccess = False
+
+if(write_to_txt):
+    while not txtAccess:
+    
+        try:
+            results = open("outputs/" + region_name + "_matches_at_" + event_slug + ".txt", "a")
+    
+            txtAccess = True
+    
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception as e:
+            logging.exception(e)
+            if numRetries > maxRetries:
+                raise Exception("Exceeded maximum number of retries to access the file")
+            print("Permission to access txt file denied, please close any programs with the file open")
+            print("Waiting to retry write request to file")
+            time.sleep(5)
+            print("Retrying write request")
+    
+            numRetries += 1
+    
+            continue
+    results.truncate(0)
+
+i = 1
 
 while(sets_returned > 0):
     query = """
@@ -102,14 +135,20 @@ while(sets_returned > 0):
             winner = player1 if (player1_score == 1) else player2
             player1_name = player1['entrant']['name']
             player2_name = player2['entrant']['name']
-            player1_state = player1['entrant']['participants'][0]['user']['location']['state']
-            player2_state = player2['entrant']['participants'][0]['user']['location']['state']
+            player1_state = player1['entrant']['participants'][0]['user']['location']['state'] if player1['entrant']['participants'][0]['user']['location'] else ""
+            player2_state = player2['entrant']['participants'][0]['user']['location']['state'] if player2['entrant']['participants'][0]['user']['location'] else ""
             if(player1_state in NE_states and player2_state in NE_states):
                 if winner == player1:
                     print(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")")
+                    if(write_to_txt):
+                        results.write(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")" + "\r\n")
                 else:
                     print(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")")
+                    if(write_to_txt):
+                        results.write(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")" + "\r\n")
     else:
         sets_returned = 0
+        print(response)
+        print(response.text)
     i += 1
-        
+print("done")
