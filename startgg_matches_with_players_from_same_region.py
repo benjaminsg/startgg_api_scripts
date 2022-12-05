@@ -10,7 +10,7 @@ url = "https://api.start.gg/gql/alpha"
 sets_returned = 1
 event_slug = "apex-2022"
 region_name = "NEM"
-write_to_txt = False
+write_to_txt = True
 
 def get_event_id(slug):
     
@@ -71,6 +71,7 @@ if(write_to_txt):
             continue
     results.truncate(0)
 
+players = set()
 i = 1
 
 while(sets_returned > 0):
@@ -122,14 +123,14 @@ while(sets_returned > 0):
     
     response = requests.post(url=url,  headers={'Authorization': 'Bearer ' + auth_token}, json=obj)
     
-    NE_states = ['CT', 'MA', 'ME', 'NH', 'RI', 'VT']
+    NE_states = {'CT', 'MA', 'ME', 'NH', 'RI', 'VT'}
     
     if response.status_code == 200:
-        sets = response.json()['data']['event']['sets']['nodes']
+        sets_played = response.json()['data']['event']['sets']['nodes']
         sets_returned = response.json()['data']['event']['sets']['pageInfo']['total']
-        for set in sets:
-            player1 = set['slots'][0]
-            player2 = set['slots'][1]
+        for set_played in sets_played:
+            player1 = set_played['slots'][0]
+            player2 = set_played['slots'][1]
             player1_score = player1['standing']['stats']['score']['value']
             player2_score = player2['standing']['stats']['score']['value']
             winner = player1 if (player1_score == 1) else player2
@@ -138,17 +139,28 @@ while(sets_returned > 0):
             player1_state = player1['entrant']['participants'][0]['user']['location']['state'] if player1['entrant']['participants'][0]['user']['location'] else ""
             player2_state = player2['entrant']['participants'][0]['user']['location']['state'] if player2['entrant']['participants'][0]['user']['location'] else ""
             if(player1_state in NE_states and player2_state in NE_states):
+                players.add(player1_name)
+                players.add(player2_name)
+            
                 if winner == player1:
                     print(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")")
-                    if(write_to_txt):
+                    if write_to_txt:
                         results.write(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")" + "\r\n")
                 else:
                     print(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")")
-                    if(write_to_txt):
+                    if write_to_txt:
                         results.write(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")" + "\r\n")
     else:
         sets_returned = 0
         print(response)
         print(response.text)
     i += 1
+print()
+if write_to_txt:
+    results.write("\r\n")
+for player in players:
+    print(player)
+    if write_to_txt:
+        results.write(player + "\r\n")
+print()
 print("done")
