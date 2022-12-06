@@ -10,7 +10,7 @@ url = "https://api.start.gg/gql/alpha"
 sets_returned = 1
 event_slug = "apex-2022"
 region_name = "NEM"
-write_to_txt = True
+write_to_txt = False
 
 def get_event_id(slug):
     
@@ -133,7 +133,7 @@ while(sets_returned > 0):
             player2 = set_played['slots'][1]
             player1_score = player1['standing']['stats']['score']['value']
             player2_score = player2['standing']['stats']['score']['value']
-            winner = player1 if (player1_score == 1) else player2
+            winner = player1 if (player1['standing']['placement'] == 1) else player2
             player1_name = player1['entrant']['name']
             player2_name = player2['entrant']['name']
             player1_state = player1['entrant']['participants'][0]['user']['location']['state'] if player1['entrant']['participants'][0]['user']['location'] else ""
@@ -141,7 +141,7 @@ while(sets_returned > 0):
             if(player1_state in NE_states and player2_state in NE_states):
                 players.add(player1_name)
                 players.add(player2_name)
-            
+                
                 if winner == player1:
                     print(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")")
                     if write_to_txt:
