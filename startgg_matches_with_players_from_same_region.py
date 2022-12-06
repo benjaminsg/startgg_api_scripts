@@ -72,6 +72,8 @@ if(write_to_txt):
     results.truncate(0)
 
 players = set()
+players_without_user = set()
+players_without_state = set()
 i = 1
 
 while(sets_returned > 0):
@@ -98,6 +100,7 @@ while(sets_returned > 0):
                                   participants {
                                       user {
                                           location {
+                                              country
                                               state
                                               }
                                           }
@@ -136,8 +139,27 @@ while(sets_returned > 0):
             winner = player1 if (player1['standing']['placement'] == 1) else player2
             player1_name = player1['entrant']['name']
             player2_name = player2['entrant']['name']
-            player1_state = player1['entrant']['participants'][0]['user']['location']['state'] if player1['entrant']['participants'][0]['user']['location'] else ""
-            player2_state = player2['entrant']['participants'][0]['user']['location']['state'] if player2['entrant']['participants'][0]['user']['location'] else ""
+            
+            if(player1['entrant']['participants'][0]['user'] == None):
+                player1_state = ""
+                players_without_user.add(player1_name)
+            elif(player1['entrant']['participants'][0]['user']['location']['state'] == None):
+                player1_state = ""
+                if(player1['entrant']['participants'][0]['user']['location']['country'] == "United States"):
+                  players_without_state.add(player1_name)
+            else:
+                player1_state = player1['entrant']['participants'][0]['user']['location']['state']
+            
+            if(player2['entrant']['participants'][0]['user'] == None):
+                player2_state = ""
+                players_without_user.add(player2_name)
+            elif(player2['entrant']['participants'][0]['user']['location']['state'] == None):
+                player2_state = ""
+                if(player2['entrant']['participants'][0]['user']['location']['country'] == "United States"):
+                  players_without_state.add(player2_name)
+            else:
+                player2_state = player2['entrant']['participants'][0]['user']['location']['state']
+            
             if(player1_state in NE_states and player2_state in NE_states):
                 players.add(player1_name)
                 players.add(player2_name)
@@ -163,4 +185,15 @@ for player in players:
     if write_to_txt:
         results.write(player + "\r\n")
 print()
+
+print("players without user")
+for player in players_without_user:
+    print(player)
+print()
+
+print("players without state")
+for player in players_without_state:
+    print(player)
+print()
+
 print("done")
