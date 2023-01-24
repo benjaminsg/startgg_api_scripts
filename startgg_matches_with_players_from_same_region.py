@@ -8,8 +8,8 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "apex-2022"
-region_name = "NEM"
+event_slug = "genesis-9-1"
+region_name = "NE"
 write_to_txt = False
 
 def get_event_id(slug):
@@ -128,6 +128,8 @@ while(sets_returned > 0):
     
     NE_states = {'CT', 'MA', 'ME', 'NH', 'RI', 'VT'}
     
+    target_states = NE_states if region_name == "NE" else [region_name]
+    
     if response.status_code == 200:
         sets_played = response.json()['data']['event']['sets']['nodes']
         sets_returned = response.json()['data']['event']['sets']['pageInfo']['total']
@@ -160,7 +162,7 @@ while(sets_returned > 0):
             else:
                 player2_state = player2['entrant']['participants'][0]['user']['location']['state']
             
-            if(player1_state in NE_states and player2_state in NE_states):
+            if(player1_state in target_states and player2_state in target_states):
                 players.add(player1_name)
                 players.add(player2_name)
                 
