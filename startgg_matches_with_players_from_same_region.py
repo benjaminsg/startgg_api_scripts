@@ -8,7 +8,7 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "genesis-9-1"
+event_slug = "super-smash-con-2023"
 region_name = "NE"
 write_to_txt = False
 
@@ -145,6 +145,9 @@ while(sets_returned > 0):
             if(player1['entrant']['participants'][0]['user'] == None):
                 player1_state = ""
                 players_without_user.add(player1_name)
+            elif(player1['entrant']['participants'][0]['user']['location'] == None):
+                player1_state = ""
+                players_without_state.add(player1_name)
             elif(player1['entrant']['participants'][0]['user']['location']['state'] == None):
                 player1_state = ""
                 if(player1['entrant']['participants'][0]['user']['location']['country'] == "United States"):
@@ -155,6 +158,9 @@ while(sets_returned > 0):
             if(player2['entrant']['participants'][0]['user'] == None):
                 player2_state = ""
                 players_without_user.add(player2_name)
+            elif(player2['entrant']['participants'][0]['user']['location'] == None):
+                player2_state = ""
+                players_without_state.add(player2_name)
             elif(player2['entrant']['participants'][0]['user']['location']['state'] == None):
                 player2_state = ""
                 if(player2['entrant']['participants'][0]['user']['location']['country'] == "United States"):

@@ -7,7 +7,7 @@ url = "https://api.start.gg/gql/alpha"
 auth_token = config.auth_token
 
 state = "WA"
-perPage = 5
+perPage = 10
 
 state = "\"" + state + "\""
 
@@ -43,6 +43,9 @@ response = requests.post(url=url,  headers={'Authorization': 'Bearer ' + auth_to
 if response.status_code == 200:
     tournaments = response.json()['data']['tournaments']['nodes']
     for tournament in tournaments:
-        print(tournament['name'] + ", " + tournament['city'] + " " + tournament['addrState'])
+        if(tournament['city'] == None):
+            print(tournament['name'], ", " + tournament['addrState'])
+        else:
+            print(tournament['name'] + ", " + tournament['city'] + " " + tournament['addrState'])
         print(datetime.fromtimestamp(tournament['startAt']))
         print()
