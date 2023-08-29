@@ -8,7 +8,7 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "super-smash-con-2023"
+event_slug = "shine-2023-4"
 region_name = "NE"
 write_to_txt = False
 
@@ -141,45 +141,46 @@ while(sets_returned > 0):
             winner = player1 if (player1['standing']['placement'] == 1) else player2
             player1_name = player1['entrant']['name']
             player2_name = player2['entrant']['name']
-            
-            if(player1['entrant']['participants'][0]['user'] == None):
-                player1_state = ""
-                players_without_user.add(player1_name)
-            elif(player1['entrant']['participants'][0]['user']['location'] == None):
-                player1_state = ""
-                players_without_state.add(player1_name)
-            elif(player1['entrant']['participants'][0]['user']['location']['state'] == None):
-                player1_state = ""
-                if(player1['entrant']['participants'][0]['user']['location']['country'] == "United States"):
-                  players_without_state.add(player1_name)
-            else:
-                player1_state = player1['entrant']['participants'][0]['user']['location']['state']
-            
-            if(player2['entrant']['participants'][0]['user'] == None):
-                player2_state = ""
-                players_without_user.add(player2_name)
-            elif(player2['entrant']['participants'][0]['user']['location'] == None):
-                player2_state = ""
-                players_without_state.add(player2_name)
-            elif(player2['entrant']['participants'][0]['user']['location']['state'] == None):
-                player2_state = ""
-                if(player2['entrant']['participants'][0]['user']['location']['country'] == "United States"):
-                  players_without_state.add(player2_name)
-            else:
-                player2_state = player2['entrant']['participants'][0]['user']['location']['state']
-            
-            if(player1_state in target_states and player2_state in target_states):
-                players.add(player1_name)
-                players.add(player2_name)
-                
-                if winner == player1:
-                    print(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")")
-                    if write_to_txt:
-                        results.write(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")" + "\r\n")
-                else:
-                    print(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")")
-                    if write_to_txt:
-                        results.write(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")" + "\r\n")
+            if(player1_score != None and player2_score != None):
+                if(player1_score >= 0 and player2_score >= 0):
+                    if(player1['entrant']['participants'][0]['user'] == None):
+                        player1_state = ""
+                        players_without_user.add(player1_name)
+                    elif(player1['entrant']['participants'][0]['user']['location'] == None):
+                        player1_state = ""
+                        players_without_state.add(player1_name)
+                    elif(player1['entrant']['participants'][0]['user']['location']['state'] == None):
+                        player1_state = ""
+                        if(player1['entrant']['participants'][0]['user']['location']['country'] == "United States"):
+                          players_without_state.add(player1_name)
+                    else:
+                        player1_state = player1['entrant']['participants'][0]['user']['location']['state']
+                    
+                    if(player2['entrant']['participants'][0]['user'] == None):
+                        player2_state = ""
+                        players_without_user.add(player2_name)
+                    elif(player2['entrant']['participants'][0]['user']['location'] == None):
+                        player2_state = ""
+                        players_without_state.add(player2_name)
+                    elif(player2['entrant']['participants'][0]['user']['location']['state'] == None):
+                        player2_state = ""
+                        if(player2['entrant']['participants'][0]['user']['location']['country'] == "United States"):
+                          players_without_state.add(player2_name)
+                    else:
+                        player2_state = player2['entrant']['participants'][0]['user']['location']['state']
+                    
+                    if(player1_state in target_states and player2_state in target_states):
+                        players.add(player1_name)
+                        players.add(player2_name)
+                        
+                        if winner == player1:
+                            print(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")")
+                            if write_to_txt:
+                                results.write(player1_name + " (" + player1_state + ") "  + str(player1_score) + " - " + str(player2_score) + " " + player2_name + " (" + player2_state + ")" + "\r\n")
+                        else:
+                            print(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")")
+                            if write_to_txt:
+                                results.write(player2_name + " (" + player2_state + ")  " + str(player2_score) + " - " + str(player1_score) + " " + player1_name + " (" + player1_state + ")" + "\r\n")
     else:
         sets_returned = 0
         print(response)
