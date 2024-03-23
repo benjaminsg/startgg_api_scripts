@@ -8,8 +8,8 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "shine-2023-4"
-region_name = "NE"
+event_slug = "collision-2024-6"
+region_name = "WA"
 write_to_txt = False
 
 def get_event_id(slug):
