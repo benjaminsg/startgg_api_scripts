@@ -8,11 +8,12 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 entrants_returned = 1
-event_slug = "collision-2024-6"
-region_name = "NE"
+event_slug = "battle-of-bc-7-6"
+region_name = "WA"
 write_to_txt = False
 
 get_placements = True
+get_socials = False
 
 def get_event_id(slug):
     
@@ -30,14 +31,14 @@ def get_event_id(slug):
             """ % slug
             
     obj = {"query": query}
-    
+        
     response = requests.post(url=url, headers={'Authorization': 'Bearer ' + auth_token}, json=obj)
     
     if response.status_code == 200:
         events = response.json()['data']['tournament']['events']
         for event in events:
             event_name = event['name']
-            if "melee" in event_name.lower() and "singles" in event_name.lower():
+            if "melee" in event_name.lower() and "singles" in event_name.lower() and (not ("ladder" in event_name.lower())) and (not ("u18" in event_name.lower())):
                 return event['id']
             
     return 0
@@ -105,6 +106,9 @@ while (entrants_returned > 0):
                     country
                     state
                   }
+                  authorizations(types: TWITTER) {
+                    externalUsername
+                  }
                 }
               }
               standing {
@@ -148,18 +152,45 @@ while (entrants_returned > 0):
                   elif(lastPlacementDigit == 2):
                       suffix = "nd"
                   elif(lastPlacementDigit == 3):
-                      suffix = "rd"
+                      if(not placement % 100 < 20):
+                          suffix = "rd"
                   if(placement == 11 or placement == 12 or placement == 13):
                       suffix = "th"
                   placement_str = str(placement) + suffix
                   if(placement_str in placement_dict):
-                      placement_dict[placement_str] += (", " + playerTag)
+                      if(get_socials):
+                          if(player['user']['authorizations'] != None):
+                              placement_dict[placement_str] += (", " + playerTag + "(@" + player['user']['authorizations'][0]['externalUsername'] + ")")
+                      else:
+                        placement_dict[placement_str] += (", " + playerTag)
                   else:
-                      placement_dict[placement_str] = playerTag
-                  print(playerTag + " (" + state + "): " + str(placement) + suffix)
+                      if(get_socials):
+                          if(player['user']['authorizations'] != None):
+                              placement_dict[placement_str] = (playerTag + "(@" + player['user']['authorizations'][0]['externalUsername'] + ")")
+                      else:  
+                          placement_dict[placement_str] = playerTag
+                  if(target_states == NE_states):
+                      print(playerTag + " (" + state + "): " + str(placement) + suffix)
+                  else:
+                      print(playerTag)
                   num_players += 1
               else:
-                  print(playerTag + " (" + state + ")")
+                  if(target_states == NE_states):
+                      if(get_socials):
+                          if(player['user']['authorizations'] != None):
+                              print(playerTag + " (@" + player['user']['authorizations'][0]['externalUsername'] + ") [" + state + "]")
+                          else:
+                              print(playerTag)
+                      else:
+                        print(playerTag + " [" + state + "]")
+                  else:
+                      if(get_socials):
+                          if(player['user']['authorizations'] != None):
+                              print(playerTag + " (@" + player['user']['authorizations'][0]['externalUsername'] + ")")
+                          else:
+                              print(playerTag)
+                      else:
+                          print(playerTag)
                   players.add(playerTag)
                   num_players += 1
     else:
