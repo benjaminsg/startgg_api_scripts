@@ -8,11 +8,11 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 entrants_returned = 1
-event_slug = "battle-of-bc-7-6"
+event_slug = "supernova-2025"
 region_name = "WA"
 write_to_txt = False
 
-get_placements = True
+get_placements = False
 get_socials = False
 
 def get_event_id(slug):

@@ -8,7 +8,7 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "undiscovered-realm-comic-con-2025"
+event_slug = "riptide-2025-4"
 region_name = "NE"
 write_to_txt = False
 
@@ -35,7 +35,7 @@ def get_event_id(slug):
         events = response.json()['data']['tournament']['events']
         for event in events:
             event_name = event['name']
-            if "melee" in event_name.lower() and "singles" in event_name.lower() and (not ("ladder" in event_name.lower())) and (not ("u18" in event_name.lower())):
+            if ("melee" in event_name.lower() and "singles" in event_name.lower() and (not ("ladder" in event_name.lower())) and (not ("u18" in event_name.lower()))) or ("smash melee arcadian high roller bracket" in event_name.lower()):
                 return event['id']
             
     return 0
