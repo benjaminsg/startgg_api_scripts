@@ -151,7 +151,7 @@ def get_player_priority(player, player_ranks, priority_mapping):
         return 100
 
 # Hufff 1419963f
-playerId = get_player_id("985d6ac2")
+playerId = get_player_id("3352d0d8")
 i = 1
 startEpoch = 1745121600
 endEpoch = 1760846340
@@ -173,7 +173,8 @@ excluded_tournaments = [
     'Final Warning: The Golden Age - Chapter III',
     'Giga HoG 7.1',
     'SSS 20.4 - A New Hampshire Melee Monthly!',
-    'The 3rd New England Melee Spartan'
+    'The 3rd New England Melee Spartan',
+    'Allston Allstars III'
     ]
 
 local_events = locals.locals.splitlines()
