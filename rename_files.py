@@ -18,8 +18,8 @@ def rename_files_in_directory(directory_path):
             # Check if it's a file (not a subdirectory)
             if os.path.isfile(old_file_path):
                 # Construct the new filename with the prefix
-                #new_filename = re.sub(r"\d{4}\s-", "Five Iron Melee 37 -", filename)
-                new_filename = re.sub(r"_\d{4}", "", filename)
+                new_filename = re.sub(r"Hotswap_\d{4}", "Five Iron Melee 40 ", filename)
+                #new_filename = re.sub(r"_\d{4}", "", filename)
                 # Construct the full new file path
                 new_file_path = os.path.join(directory_path, new_filename)
 

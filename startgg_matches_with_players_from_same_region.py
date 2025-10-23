@@ -8,8 +8,8 @@ auth_token = config.auth_token
 url = "https://api.start.gg/gql/alpha"
 
 sets_returned = 1
-event_slug = "riptide-2025-4"
-region_name = "NE"
+event_slug = "portland-retro-gaming-expo-2025-super-smash-bros-melee"
+region_name = "WA"
 write_to_txt = False
 
 def get_event_id(slug):
@@ -136,7 +136,7 @@ while(sets_returned > 0):
         for set_played in sets_played:
             player1 = set_played['slots'][0]
             player2 = set_played['slots'][1]
-            if (player1['standing'] != None):
+            if (player1['standing'] != None and player2['standing'] != None):
                 player1_score = player1['standing']['stats']['score']['value']
                 player2_score = player2['standing']['stats']['score']['value']
                 winner = player1 if (player1['standing']['placement'] == 1) else player2
