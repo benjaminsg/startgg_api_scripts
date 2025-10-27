@@ -148,10 +148,10 @@ def get_player_priority(player, player_ranks, priority_mapping):
     if (player in player_ranks):
         return priority_mapping[player_ranks[player]]
     else:
-        return 100
+        return 200
 
 # Hufff 1419963f
-playerId = get_player_id("3352d0d8")
+playerId = get_player_id("621ad772")
 i = 1
 startEpoch = 1745121600
 endEpoch = 1760846340
@@ -174,7 +174,22 @@ excluded_tournaments = [
     'Giga HoG 7.1',
     'SSS 20.4 - A New Hampshire Melee Monthly!',
     'The 3rd New England Melee Spartan',
-    'Allston Allstars III'
+    'Allston Allstars III',
+    'UMassD Smash Club Spring 2025 #11',
+    'UMass Games 4',
+    'SCONEFEST Fall 2025 #2',
+    'BU Semester of Smash 427',
+    'BU Semester of Smash 428',
+    'BU Semester of Smash 430: CHARLIE KIRK MEMORIAL',
+    'BUmmer Summer #6: DannyPizzaFest edition',
+    'BUmmer Summer #5: THE RETURN',
+    'SCONEFEST Summer 2025 #2',
+    'SCONEFEST Summer 2025 #4: It\'s Again In My Home',
+    'SCONEFEST Fall 2025 #5',
+    'SCONEFEST Fall 2025 #1',
+    'SCONEFEST Summer 2025 #3: It\'s at My House This Time',
+    'BU Semester of Smash 435',
+    'UConn Union of Melee 51: Yo momma soooooo fat'
     ]
 
 local_events = locals.locals.splitlines()
@@ -187,7 +202,7 @@ max_tag_len = 0
 
 while True:
     sets = get_sets(playerId, i, startEpoch)
-    if len(sets) < 1:
+    if sets == None or len(sets) < 1:
         break
     for set in sets:
         eventStart = set['event']['startAt']

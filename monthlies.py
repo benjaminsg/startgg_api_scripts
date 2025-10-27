@@ -59,4 +59,6 @@ NYCMelee's Stock Exchange #15 - Collision prelocal
 Retro Galaxy Melee #2
 The Barn Burner #1
 Pichu Party Resurrected #7
+Lucky 7s Side Bracket
+Vacationland Arcadian 2
 '''
