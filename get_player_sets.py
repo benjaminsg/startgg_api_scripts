@@ -5,6 +5,7 @@ import monthlies
 import regionals_and_majors
 import player_rank
 from itertools import zip_longest
+import re
 
 auth_token = config.auth_token
 
@@ -74,6 +75,9 @@ def get_sets(id, page, startEpoch):
                                             player {
                                                 id
                                                 }
+                                            location {
+                                                state
+                                                }
                                             }
                                         }
                                     }
@@ -94,21 +98,56 @@ def get_sets(id, page, startEpoch):
     
 def get_other_entrant(set, playerId):
     slots = set['slots']
-    for i in range(len(slots)):
-        entrant = slots[i]['entrant']
-        if (entrant != None):
-            user = entrant['participants'][0]['user']
-            if user != None:
-                player = user['player']
-                if player != None:
-                    entrantId = player['id']
-                    if entrantId != playerId:
-                        return entrant['name']
-            else:
-                j = 1 - i
-                if slots[j]['entrant']['participants'][0]['user'] != None:
-                    return entrant['name']
+    if (len(slots) == 2):
+        for i in range(len(slots)):
+            entrant = slots[i]['entrant']
+            if (entrant != None):
+                user = entrant['participants'][0]['user']
+                if user != None:
+                    state = None
+                    location = user['location']
+                    if location != None:
+                        state = location['state']
+                    player = user['player']
+                    if player != None:
+                        entrantId = player['id']
+                        if entrantId != playerId:
+                            entrant_name = entrant['name']
+                            if 'Tommy' in entrant_name:
+                                return get_tommy_tag(state)
+                            if get_string_after_char(entrant_name, '|') == 'Q':
+                                return get_q_tag(state)
+                            return entrant_name
+                else:
+                    j = 1 - i
+                    if slots[j]['entrant']['participants'][0]['user'] != None:
+                        entrant_name = entrant['name']
+                        state = None
+                        entrant = slots[j]['entrant']
+                        user = entrant['participants'][0]['user']
+                        location = user['location']
+                        if location != None:
+                            state = location['state']
+                        if 'Tommy' in entrant_name:
+                            return get_tommy_tag(state)
+                        if get_string_after_char(entrant_name, '|') == 'Q':
+                            return get_q_tag(state)
+                        return entrant_name
     return None
+
+def get_tommy_tag(state):
+    if state == 'NH':
+        return 'Tommy (NH)'
+    if state == 'NJ':
+        return 'Tommy (NJ)'
+    return 'Tommy (CT)'
+
+def get_q_tag(state):
+    if state == 'CT':
+        return 'Q (CT)'
+    if state == 'MA':
+        return 'Q (MA)'
+    return 'Q'
 
 def get_player_entrant_id(set, playerId):
     slots = set['slots']
@@ -149,9 +188,45 @@ def get_player_priority(player, player_ranks, priority_mapping):
         return priority_mapping[player_ranks[player]]
     else:
         return 200
+    
+def extract_score(s: str) -> str | None:
+    if s == None:
+        return ''
+    """Return score as 'A - B' or None if no clear score found."""
+    # find a dash (hyphen, en-dash, em-dash)
+    dash_match = re.search(r'[-–—]', s)
+    if not dash_match:
+        # fallback: first two numbers
+        nums = re.findall(r'\d+', s)
+        return f"{nums[0]} - {nums[1]}" if len(nums) >= 2 else None
+
+    dash_pos = dash_match.start()
+
+    # find all numbers along with their spans
+    nums_with_spans = [(m.group(), m.start(), m.end()) for m in re.finditer(r'\d+', s)]
+
+    left = None   # last number that ends before the dash
+    right = None  # last number that starts after (or at) the dash
+
+    for val, st, en in nums_with_spans:
+        if en <= dash_pos:
+            left = val
+        if st >= dash_pos:
+            right = val  # we keep updating so we end up with the last number after the dash
+
+    # if both found, return them
+    if left is not None and right is not None:
+        return f"{left} - {right}"
+
+    # fallback to first-two-numbers if structure was unexpected
+    nums = [v for v,_,_ in nums_with_spans]
+    if len(nums) >= 2:
+        return f"{nums[0]} - {nums[1]}"
+
+    return ""
 
 # Hufff 1419963f
-playerId = get_player_id("621ad772")
+playerId = get_player_id("161d08c2")
 i = 1
 startEpoch = 1745121600
 endEpoch = 1760846340
@@ -192,6 +267,10 @@ excluded_tournaments = [
     'UConn Union of Melee 51: Yo momma soooooo fat'
     ]
 
+included_event_names = [
+    'was invitational'
+    ]
+
 local_events = locals.locals.splitlines()
 monthly_events = monthlies.monthlies.splitlines()
 regional_and_major_events = regionals_and_majors.regionals_and_majors.splitlines()
@@ -209,23 +288,25 @@ while True:
         eventName = set['event']['name'].lower()
         eventGameId = set['event']['videogame']['id']
         winnerId = set['winnerId']
-        if (eventStart <= endEpoch and eventGameId == 1 and 'singles' in eventName and not ('amateur' in eventName)):
-            otherEntrantFullTag = get_other_entrant(set, playerId)
-            otherEntrantTag = get_string_after_char(otherEntrantFullTag, '|')
-            if ('|' in otherEntrantTag):
-                otherEntrantTag = get_string_after_char(otherEntrantTag, '|')
-            tournament = set['event']['tournament']['name']
-            if (not tournament in excluded_tournaments):
-                if len(otherEntrantTag) > max_tag_len:
-                    max_tag_len = len(otherEntrantTag)
-                if (tournament in local_events):
-                    add_win_or_loss(set, tournament, playerId, local_wins, local_losses, otherEntrantTag)
-                elif (tournament in monthly_events):
-                    add_win_or_loss(set, tournament, playerId, monthly_wins, monthly_losses, otherEntrantTag)
-                elif (tournament in regional_and_major_events):
-                    add_win_or_loss(set, tournament, playerId, regional_and_major_wins, regional_and_major_losses, otherEntrantTag)
-                else:
-                    other_events.add(tournament)
+        if (eventStart <= endEpoch and eventGameId == 1 and (('singles' in eventName and not ('amateur' in eventName)) or eventName in included_event_names)):
+            score = extract_score(set['displayScore'])
+            if score != "4 - 0" and score != "0 - 4":
+                otherEntrantFullTag = get_other_entrant(set, playerId)
+                otherEntrantTag = get_string_after_char(otherEntrantFullTag, '|')
+                if ('|' in otherEntrantTag):
+                    otherEntrantTag = get_string_after_char(otherEntrantTag, '|')
+                tournament = set['event']['tournament']['name']
+                if (not tournament in excluded_tournaments):
+                    if len(otherEntrantTag) > max_tag_len:
+                        max_tag_len = len(otherEntrantTag)
+                    if (tournament in local_events):
+                        add_win_or_loss(set, tournament, playerId, local_wins, local_losses, otherEntrantTag)
+                    elif (tournament in monthly_events):
+                        add_win_or_loss(set, tournament, playerId, monthly_wins, monthly_losses, otherEntrantTag)
+                    elif (tournament in regional_and_major_events):
+                        add_win_or_loss(set, tournament, playerId, regional_and_major_wins, regional_and_major_losses, otherEntrantTag)
+                    else:
+                        other_events.add(tournament)
     i += 1
 print("\twins")
 print()
