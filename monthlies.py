@@ -62,4 +62,6 @@ Pichu Party Resurrected #7
 Lucky 7s Side Bracket
 Vacationland Arcadian 2
 The 5th WAS Invitational
+GOML Forever: The Pre-Local (That counts for Top 100!)
+Melee CAMP 3: A Song of Rice and Bird
 '''

@@ -226,7 +226,7 @@ def extract_score(s: str) -> str | None:
     return ""
 
 # Hufff 1419963f
-playerId = get_player_id("161d08c2")
+playerId = get_player_id("a27d2e0a")
 i = 1
 startEpoch = 1745121600
 endEpoch = 1760846340
@@ -264,11 +264,14 @@ excluded_tournaments = [
     'SCONEFEST Fall 2025 #1',
     'SCONEFEST Summer 2025 #3: It\'s at My House This Time',
     'BU Semester of Smash 435',
-    'UConn Union of Melee 51: Yo momma soooooo fat'
+    'UConn Union of Melee 51: Yo momma soooooo fat',
+    'Seacoast Smackdown: Season 2, Episode 1',
+    'Orange Crate #4 - The Schining'
     ]
 
 included_event_names = [
-    'was invitational'
+    'was invitational',
+    'sangles'
     ]
 
 local_events = locals.locals.splitlines()

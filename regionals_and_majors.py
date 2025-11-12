@@ -13,4 +13,5 @@ Patchwork 2025: All Patched Up!
 Tipped Off 16: Safari
 Unranked
 Riptide 2025
+Full Hops! A Super Smash Brothers Melee Beer Release
 '''

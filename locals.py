@@ -147,4 +147,10 @@ Pho Tai Melee #111 Juicy
 FreePlay Melee #127
 Melee Monday @ Bumper's 25
 Pho Tai Melee #106 🦧
+Melee Monday @ Bumper's 23: NESL Qualifier
+Melee Monday @ Bumper’s 29
+Melee Monday @ Bumper’s 32
+Melee Monday @ Bumper's 30
+Melee Monday @ Bumper's 31 ($100 POT BONUS!)
+Fly, Melee Fly #38
 '''

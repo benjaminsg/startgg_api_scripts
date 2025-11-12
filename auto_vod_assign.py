@@ -232,8 +232,8 @@ def process(slug: str, playlist_urls: list[str], file, api_key: str, dry_run: bo
 
     json.dump(data, file, indent=2)
 
-slug = "five-iron-melee-40"
-playlist_urls = ["https://www.youtube.com/playlist?list=PLP919T2vqlm1iFM4WFkWLTc0C6aKD17GQ"]
+slug = "five-iron-melee-31"
+playlist_urls = ["https://www.youtube.com/playlist?list=PLP919T2vqlm3Vh5jDgJ0UWwNi5Yx8Czbn"]
 out = open("out.json", "w")
 api_key = config.auth_token
 dry_run = False
